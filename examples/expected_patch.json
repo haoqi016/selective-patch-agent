@@ -1,0 +1,146 @@
+{
+  "knowledge": {
+    "tools": [
+      {
+        "id": "document.fetch",
+        "description": "Retrieve a document by identifier.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "document_id"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "object",
+              "properties": {
+                "body": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "routing": {
+          "server": "synthetic-research",
+          "tool": "document.fetch"
+        }
+      },
+      {
+        "id": "notes.save",
+        "description": "Save a research note.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "body"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "note_id": {
+              "type": "string"
+            }
+          }
+        },
+        "routing": {
+          "server": "synthetic-research",
+          "tool": "notes.save"
+        }
+      },
+      {
+        "id": "citation.lookup",
+        "description": "Find citation metadata for an identifier.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "document_id"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "citation": {
+              "type": "string"
+            }
+          }
+        },
+        "routing": {
+          "server": "synthetic-research",
+          "tool": "citation.lookup"
+        }
+      }
+    ],
+    "rules": [
+      {
+        "id": "fetch-then-save",
+        "tool_refs": [
+          "document.fetch",
+          "notes.save"
+        ],
+        "text": "Read the text field returned by document.fetch, then save it with notes.save.",
+        "status": "needs_review",
+        "review_reasons": [
+          {
+            "changed_tools": [
+              "document.fetch"
+            ],
+            "action": "check_rule_semantics"
+          }
+        ]
+      },
+      {
+        "id": "save-confirmation",
+        "tool_refs": [
+          "notes.save"
+        ],
+        "text": "Use the note_id in the save result as the confirmation.",
+        "status": "active"
+      }
+    ],
+    "retired_rules": []
+  },
+  "report": {
+    "added": [
+      "citation.lookup"
+    ],
+    "removed": [],
+    "changed": [
+      "document.fetch"
+    ],
+    "unchanged": [
+      "notes.save"
+    ],
+    "changed_fields": {
+      "document.fetch": [
+        "output_schema"
+      ]
+    },
+    "newly_flagged_rules": [
+      "fetch-then-save"
+    ],
+    "retired_rules": [],
+    "pending_review": [
+      "fetch-then-save"
+    ],
+    "model_calls": 0,
+    "fixture_type": "synthetic"
+  }
+}

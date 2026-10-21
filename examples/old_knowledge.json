@@ -1,0 +1,77 @@
+{
+  "tools": [
+    {
+      "id": "document.fetch",
+      "description": "Retrieve a document by identifier.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "routing": {
+        "server": "synthetic-research",
+        "tool": "document.fetch"
+      }
+    },
+    {
+      "id": "notes.save",
+      "description": "Save a research note.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "note_id": {
+            "type": "string"
+          }
+        }
+      },
+      "routing": {
+        "server": "synthetic-research",
+        "tool": "notes.save"
+      }
+    }
+  ],
+  "rules": [
+    {
+      "id": "fetch-then-save",
+      "tool_refs": [
+        "document.fetch",
+        "notes.save"
+      ],
+      "text": "Read the text field returned by document.fetch, then save it with notes.save.",
+      "status": "active"
+    },
+    {
+      "id": "save-confirmation",
+      "tool_refs": [
+        "notes.save"
+      ],
+      "text": "Use the note_id in the save result as the confirmation.",
+      "status": "active"
+    }
+  ]
+}
